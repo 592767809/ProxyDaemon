@@ -40,10 +40,22 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(
-                        "V2Ray 代理管理器",
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "Proxy Daemon",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))  // 可以调整上下间距
+                        Text(
+                            "一键开启旁路由",
+                            fontWeight = FontWeight.Thin,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
