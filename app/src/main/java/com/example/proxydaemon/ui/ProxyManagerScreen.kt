@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.proxydaemon.util.IOUtils
 import com.example.proxydaemon.viewmodel.ProxyViewModel
 
 @Composable
@@ -18,6 +19,10 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
     val context = LocalContext.current
     val v2rayStatus by viewModel.v2rayStatus.collectAsState()
     val logOutput by viewModel.logOutput.collectAsState()
+
+    LaunchedEffect(Unit) {
+        IOUtils.copyScriptToSystem(context)
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -29,7 +34,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
         Spacer(Modifier.height(8.dp))
 
         Spacer(Modifier.height(24.dp))
-        Button(onClick = { viewModel.runProxyScript(context) }) {
+        Button(onClick = { viewModel.runProxyScript() }, enabled = v2rayStatus) {
             Text("立即执行脚本")
         }
 
