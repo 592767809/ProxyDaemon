@@ -6,7 +6,7 @@ import java.io.FileOutputStream
 object IOUtils {
 
     var destinationPath = ""
-    var systemDestinationPath = "/data/local/tmp/"
+    var systemDestinationPath = "/data/local/tmp"
 
     fun copyScriptToSystem(context: Context) {
         val fileName = "proxyDaemon.sh"
