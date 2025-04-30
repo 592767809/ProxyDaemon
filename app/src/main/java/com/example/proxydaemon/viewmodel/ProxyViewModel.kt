@@ -20,13 +20,13 @@ class ProxyViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
-
+            appendLog("检测v2ray是否运行")
             val v2ray_pid = RootShell.rootExec("pgrep com.v2ray")
             val v2rayRunning = v2ray_pid.trim().isNotEmpty()
             _v2rayStatus.value = v2rayRunning
 
             if (v2rayRunning){
-                appendLog("v2ray正在运行，运行PID：${v2ray_pid.trim()}")
+                appendLog("v2ray正在运行：${v2ray_pid.trim()}")
             }else {
                 appendLog("v2ray未启动，请先启动v2ray")
             }
@@ -35,7 +35,7 @@ class ProxyViewModel: ViewModel() {
         }
     }
 
-    private fun appendLog(text: String) {
+    fun appendLog(text: String) {
         val timestamp = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
         _logOutput.value += "[$timestamp] $text\n"
     }
@@ -43,15 +43,16 @@ class ProxyViewModel: ViewModel() {
     fun runProxyScript() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                appendLog("检测脚本是否重复运行")
                 val result = RootShell.rootExec("pgrep proxyDaemon.sh")
                 if (result.isNotEmpty()) {
                     appendLog("脚本已在运行中，无需重复启动")
                 } else {
                     val proxy_pid = RootShell.rootExec("nohup ${IOUtils.systemDestinationPath} &")
-                    appendLog("脚本运行PID：${proxy_pid}")
+                    appendLog("脚本运行成功：${proxy_pid}")
                 }
             } catch (e: Exception) {
-                appendLog("启动失败: ${e.message}")
+                appendLog("脚本启动失败: ${e.message}")
             }
         }
     }
