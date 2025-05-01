@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +36,19 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            val appName = "ProxyDaemon"
+            val buildTypeName = buildType.name
+            val versionName = versionName
+            val newName = "${appName}-${buildTypeName}-v${versionName}.apk"
+
+            println("输出 APK: $newName")
+
+            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName = newName
+        }
     }
 }
 
