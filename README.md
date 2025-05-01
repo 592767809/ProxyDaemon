@@ -39,4 +39,4 @@ app/build/outputs/apk/release/ProxyDaemon-release-v1.x.x.apk
 本项目需要 root 权限以运行系统脚本，请确保你了解相关安全风险。
 
 # License
-MIT License - 自由使用，注意风险自负。
+[MIT License](./LICENSE) - 自由使用，注意风险自负。
