@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 import com.example.proxydaemon.ui.ProxyManagerScreen
-
+import com.example.proxydaemon.util.RootShell
 
 
 class MainActivity : ComponentActivity() {
@@ -18,6 +18,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProxyManagerScreen()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        RootShell.close()
     }
 }
 
