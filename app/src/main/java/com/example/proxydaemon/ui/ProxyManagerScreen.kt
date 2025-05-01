@@ -162,7 +162,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
 
                     Button(
                         onClick = { viewModel.runProxyScript() },
-                        enabled = v2rayAppStatus,
+                        enabled = v2rayAppStatus && v2rayProxyStatus,
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(vertical = 16.dp),
                         colors = ButtonDefaults.buttonColors(
