@@ -35,9 +35,6 @@ class ProxyViewModel: ViewModel() {
         viewModelScope.launch {
             // 检测各种状态
             checkStatus()
-
-            // 获取网络状态
-            NetworkUtils.initNetworkInfo()
         }
     }
 
@@ -115,7 +112,6 @@ class ProxyViewModel: ViewModel() {
     fun refreshStatus(){
         viewModelScope.launch(Dispatchers.IO) {
             checkStatus()
-            NetworkUtils.initNetworkInfo()
         }
     }
 

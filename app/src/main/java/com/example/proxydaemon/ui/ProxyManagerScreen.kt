@@ -55,6 +55,9 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
             viewModel.appendLog("拷贝内置脚本到系统")
             IOUtils.copyScriptToSystem(context)
             viewModel.appendLog("拷贝完成 ✔\uFE0F")
+
+            // 获取网络状态
+            NetworkUtils.initNetworkInfo()
         }
     }
 
