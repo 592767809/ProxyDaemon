@@ -1,6 +1,7 @@
 package com.example.proxydaemon.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proxydaemon.util.IOUtils
+import com.example.proxydaemon.util.NetworkUtils
 import com.example.proxydaemon.viewmodel.ProxyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,12 +37,20 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
     val logOutput by viewModel.logOutput.collectAsState()
     val copyScriptToSystemStatus by viewModel.copyScriptToSystemStatus.collectAsState()
 
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val tabTitles = listOf("通用","Android", "iOS", "Windows", "Mac", "Linux")
+
     LaunchedEffect(Unit) {
-        // 如果viewmodel的init部分检测正常完成，那么就把脚本复制出来
+        // 如果viewmodel的init部分检测正常完成
         if (rootStatus && copyScriptToSystemStatus){
+            // 把脚本复制出来
             viewModel.appendLog("拷贝内置脚本到系统")
             IOUtils.copyScriptToSystem(context)
             viewModel.appendLog("拷贝完成 ✔\uFE0F")
+
+            // 获取网络状态
+            NetworkUtils.getNetworkInfo()
         }
     }
 
@@ -66,6 +76,15 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                             "一键开启旁路由",
                             fontWeight = FontWeight.Thin,
                             style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Info,
+                            contentDescription = "信息",
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 },
@@ -277,5 +296,143 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                 }
             }
         }
+
+        // 模态弹窗部分
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("关闭")
+                    }
+                },
+                title = {
+                    Text("使用帮助", fontWeight = FontWeight.Bold)
+                },
+                text = {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min=100.dp, max=200.dp)
+                    ) {
+                        // 左侧竖直 Tabs
+                        Column(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .fillMaxHeight()
+                                .padding(vertical = 1.dp)
+                        ) {
+                            tabTitles.forEachIndexed { index, title ->
+                                val selected = selectedTabIndex == index
+                                Text(
+                                    text = title,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { selectedTabIndex = index }
+                                        .padding(5.dp),
+                                    color = if (selected)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+
+                        // 右侧内容区
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 10.dp)
+                                .verticalScroll(scrollState) // 添加滚动支持
+                        ) {
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            val generalInfoText = buildString {
+                                append("路由器地址：\n${NetworkUtils.networkInfo["ip"]}\n\n")
+                                append("子网掩码：\n${NetworkUtils.networkInfo["netmask"]}\n\n")
+                                append("前缀长度：\n${NetworkUtils.networkInfo["netmaskPrefix"]}\n\n")
+                                append("DNS：\n${NetworkUtils.networkInfo["dns"]}")
+                            }
+
+                            when (tabTitles[selectedTabIndex]) {
+                                "通用" -> Text(generalInfoText)
+                                "Android" -> Text(
+                                            "进入“设置”\n\n" +
+                                            "打开“WLAN”\n\n" +
+                                            "选择“已连接的WLAN”\n\n" +
+                                            "进入网络详情\n\n" +
+                                            "记下目前IP地址\n\n" +
+                                            "把“IP设置”更改为“静态”\n\n" +
+                                            "按照如下内容输入：\n\n" +
+                                            "IP地址：\n刚才记下的IP地址\n\n" +
+                                            "路由器：\n${NetworkUtils.networkInfo["ip"]}\n\n" +
+                                            "前缀长度：\n${NetworkUtils.networkInfo["netmaskPrefix"]}\n\n" +
+                                            "DNS：\n${NetworkUtils.networkInfo["dns"]}"
+                                )
+                                "iOS" -> Text(
+                                            "进入“设置”\n\n" +
+                                            "打开“Wi-Fi”\n\n" +
+                                            "点击已连接的Wi-Fi\n\n" +
+                                            "找到“IPV4地址”\n\n" +
+                                            "记下目前IP地址\n\n" +
+                                            "修改“配置IP”为“手动”\n\n" +
+                                            "按照如下内容输入：\n\n" +
+                                            "IP地址：\n刚才记下的IP地址\n\n" +
+                                            "子网掩码：\n${NetworkUtils.networkInfo["netmask"]}\n\n" +
+                                            "路由器：\n${NetworkUtils.networkInfo["ip"]}\n\n"
+                                )
+                                "Windows" -> Text(
+                                            "点击右下角“网络图标”\n\n" +
+                                            "打开“网络和Internet设置”\n\n" +
+                                            "点击“更改适配器选项”\n\n" +
+                                            "右键点击已连接的Wi-Fi，选择“属性”\n\n" +
+                                            "双击“Internet协议版本 4 (TCP/IPv4)”\n\n" +
+                                            "记下当前IP地址信息\n\n" +
+                                            "选择“使用下面的IP地址”\n\n" +
+                                            "按照如下内容输入：\n\n" +
+                                            "IP地址：\n刚才记下的IP地址\n\n" +
+                                            "子网掩码：\n${NetworkUtils.networkInfo["netmask"]}\n\n" +
+                                            "默认网关：\n${NetworkUtils.networkInfo["ip"]}\n\n" +
+                                            "DNS服务器：\n${NetworkUtils.networkInfo["dns"]}"
+                                )
+
+                                "Mac" -> Text(
+                                            "点击屏幕右上角的“Wi-Fi图标”\n\n" +
+                                            "选择“打开网络偏好设置”\n\n" +
+                                            "选中当前连接的Wi-Fi，点击右下角“高级”\n\n" +
+                                            "切换到“TCP/IP”标签\n\n" +
+                                            "记下当前IP地址\n\n" +
+                                            "将“配置IPv4”改为“手动”\n\n" +
+                                            "按照如下内容输入：\n\n" +
+                                            "IP地址：\n刚才记下的IP地址\n\n" +
+                                            "子网掩码：\n${NetworkUtils.networkInfo["netmask"]}\n\n" +
+                                            "路由器地址：\n${NetworkUtils.networkInfo["ip"]}\n\n" +
+                                            "DNS服务器：\n${NetworkUtils.networkInfo["dns"]}"
+                                )
+
+                                "Linux" -> Text(
+                                            "打开“系统设置”\n\n" +
+                                            "进入“网络”或“Wi-Fi”设置\n\n" +
+                                            "选择已连接的网络，点击齿轮图标进入设置\n\n" +
+                                            "切换到“IPv4”标签页\n\n" +
+                                            "记下当前的IP地址\n\n" +
+                                            "将“方法”改为“手动”\n\n" +
+                                            "按照如下内容输入：\n\n" +
+                                            "地址：\n刚才记下的IP地址\n\n" +
+                                            "子网掩码：\n${NetworkUtils.networkInfo["netmask"]}\n\n" +
+                                            "网关：\n${NetworkUtils.networkInfo["ip"]}\n\n" +
+                                            "DNS：\n${NetworkUtils.networkInfo["dns"]}"
+                                )
+                            }
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        }
+
+
     }
 }
