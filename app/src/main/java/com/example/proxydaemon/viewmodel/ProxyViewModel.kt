@@ -21,6 +21,9 @@ class ProxyViewModel: ViewModel() {
     private val _v2rayProxyStatus = MutableStateFlow(false)
     val v2rayProxyStatus: StateFlow<Boolean> = _v2rayProxyStatus
 
+    private val _scriptStatus = MutableStateFlow(false)
+    val scriptStatus: StateFlow<Boolean> = _scriptStatus
+
     private val _logOutput = MutableStateFlow("")
     val logOutput: StateFlow<String> = _logOutput
 
@@ -41,13 +44,13 @@ class ProxyViewModel: ViewModel() {
     fun runProxyScript() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                appendLog("检测脚本状态")
                 val result = RootShell.rootExec("pgrep proxyDaemon.sh")
                 if (result.isNotEmpty()) {
-                    appendLog("脚本已运行，无需重复启动")
+                    appendLog("脚本正在运行，无需重复启动")
                 } else {
                     RootShell.rootExec("nohup ${IOUtils.systemDestinationPath} &")
                     appendLog("脚本运行成功 ✔\uFE0F")
+                    _scriptStatus.value = true
                 }
             } catch (e: Exception) {
                 appendLog("脚本启动失败")
@@ -81,6 +84,14 @@ class ProxyViewModel: ViewModel() {
 
                         if (isV2rayProxyOn) {
                             appendLog("V2Ray 代理已开启 ✔\uFE0F")
+
+                            appendLog("检测脚本状态")
+                            val result = RootShell.rootExec("pgrep proxyDaemon.sh")
+                            if (result.isNotEmpty()) {
+                                _scriptStatus.value = true
+                                appendLog("脚本正在运行 ✔\uFE0F")
+                            }
+
                         } else {
                             appendLog("未检测到 V2Ray 代理，请选择一个节点开启代理 ❌")
                         }
