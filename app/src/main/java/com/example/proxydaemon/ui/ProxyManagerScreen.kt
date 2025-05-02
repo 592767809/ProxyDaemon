@@ -625,7 +625,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                             modifier = Modifier.fillMaxWidth(),
                                             verticalArrangement = Arrangement.spacedBy(12.dp)
                                         ) {
-                                            InfoCard("路由器地址", NetworkUtils.networkInfo["ip"] ?: "未知")
+                                            InfoCard("旁路由地址", NetworkUtils.networkInfo["ip"] ?: "未知")
                                             InfoCard("子网掩码", NetworkUtils.networkInfo["netmask"] ?: "未知")
                                             InfoCard("前缀长度", NetworkUtils.networkInfo["netmaskPrefix"] ?: "未知")
                                             InfoCard("DNS", NetworkUtils.networkInfo["dns"] ?: "未知")
