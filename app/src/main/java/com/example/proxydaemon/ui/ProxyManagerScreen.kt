@@ -29,6 +29,7 @@ import com.example.proxydaemon.viewmodel.ProxyViewModel
 @Composable
 fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
     val context = LocalContext.current
+    val rootStatus by viewModel.rootStatus.collectAsState()
     val v2rayAppStatus by viewModel.v2rayAppStatus.collectAsState()
     val v2rayProxyStatus by viewModel.v2rayProxyStatus.collectAsState()
     val logOutput by viewModel.logOutput.collectAsState()
@@ -36,10 +37,10 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
 
     LaunchedEffect(Unit) {
         // 如果viewmodel的init部分检测正常完成，那么就把脚本复制出来
-        if (copyScriptToSystemStatus){
-            viewModel.appendLog("拷贝程序内的脚本到：${IOUtils.systemDestinationPath}")
+        if (rootStatus && copyScriptToSystemStatus){
+            viewModel.appendLog("拷贝内置脚本到系统")
             IOUtils.copyScriptToSystem(context)
-            viewModel.appendLog("完成：${IOUtils.systemDestinationPath}")
+            viewModel.appendLog("拷贝完成 ✔\uFE0F")
         }
     }
 
@@ -87,7 +88,53 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 状态卡片
+                // root 状态卡片
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = cardColor),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(24.dp))
+                                .background(if (rootStatus) Color(0xFF4CAF50) else Color(0xFFE53935))
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = (if (rootStatus) Icons.Outlined.CheckCircle else Icons.Outlined.Info),
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Column {
+                            Text(
+                                text = "Root 状态",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                            )
+                            Text(
+                                text = if (rootStatus) "- 设备已 Root" else "- 设备未 Root",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = (if (rootStatus) Color(0xFF4CAF50) else Color(0xFFE53935))
+                            )
+                        }
+                    }
+                }
+
+                // v2ray 状态卡片
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = cardColor),
@@ -118,19 +165,20 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
 
                         Column {
                             Text(
-                                text = "状态",
-                                fontSize = 14.sp,
+                                text = "V2Ray 状态",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                             )
                             Text(
-                                text = if (v2rayAppStatus) "V2Ray 已启动" else "V2Ray 未启动",
-                                fontSize = 18.sp,
+                                text = if (v2rayAppStatus) "- 应用已启动" else "- 请先启动应用",
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = (if (v2rayAppStatus) Color(0xFF4CAF50) else Color(0xFFE53935))
                             )
                             Text(
-                                text = (if (v2rayProxyStatus) "V2Ray 代理已连接" else "V2Ray 代理未连接"),
-                                fontSize = 18.sp,
+                                text = (if (v2rayProxyStatus) "- 代理已连接" else "- 请选择一个节点连接"),
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = (if (v2rayProxyStatus) Color(0xFF4CAF50) else Color(0xFFE53935))
                             )
@@ -162,7 +210,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
 
                     Button(
                         onClick = { viewModel.runProxyScript() },
-                        enabled = v2rayAppStatus && v2rayProxyStatus,
+                        enabled = rootStatus && v2rayAppStatus && v2rayProxyStatus,
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(vertical = 16.dp),
                         colors = ButtonDefaults.buttonColors(
