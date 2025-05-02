@@ -49,8 +49,8 @@
 ## 📕 软件截图
 
 <p align="center">
-  <img src="images/fig1.png" alt="图1" width="230"/>
-  <img src="images/fig2.png" alt="图2" width="230"/>
+  <img src="images/fig1.png" alt="图1" width="230" style="margin-right: 20px;"/>
+  <img src="images/fig2.png" alt="图2" width="230" style="margin-right: 20px;"/>
   <img src="images/fig3.png" alt="图3" width="230"/>
 </p>
 
