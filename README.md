@@ -48,7 +48,11 @@
 
 ## 📕 软件截图
 
-<img src="images/fig1.png" alt="截图" width="300"/>
+<p align="center">
+  <img src="images/fig1.png" alt="图1" width="300"/>
+  <img src="images/fig2.png" alt="图2" width="300"/>
+  <img src="images/fig3.png" alt="图3" width="300"/>
+</p>
 
 ## 🛠️ 自己构建APK
 
