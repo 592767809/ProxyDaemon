@@ -12,7 +12,6 @@
 <p align="center">
   <img src="images/fig1.png" alt="图1" width="230" style="margin-right: 20px;"/>
   <img src="images/fig2.png" alt="图2" width="230" style="margin-right: 20px;"/>
-  <img src="images/fig3.png" alt="图3" width="230"/>
 </p>
 
 ## ✨ 功能介绍
@@ -24,12 +23,10 @@
 
 
 
-## 📦 下载
-
-[点此下载最新版 APK](https://github.com/Sh-Fang/ProxyDaemon/releases/)  
-
-
 ## 📋 使用说明
+
+> 再次提醒：这个 APP 是安装到闲置的并且已经 Root 过的安卓设备上的，按照下面的使用方法启动脚本后，这台安卓设备就变成了一个旁路由设备。
+
 
 ### 前提条件：
 
@@ -39,18 +36,32 @@
 
 ### 第一次使用：
 
-- APP打开后，会把内置的脚本 proxyDaemon.sh 拷贝到 /data/local/tmp/ 并自动赋予执行权限（chmod +x）
+- APP打开后，会自动检测相关状态，如果状态全部 OK 才能执行脚本
+  
+- APP会把内置的脚本 proxyDaemon.sh 拷贝到 /data/local/tmp/ 并自动赋予执行权限（chmod +x）
 
-- 点击「立即执行脚本」按钮，后台运行脚本（如果没有检测到 V2Ray，按钮会置灰无法点击）
+- 点击「立即执行脚本」按钮，后台运行脚本
+
+- 界面右上角有一个ℹ️图标，点击这个图标可以进入帮助页面，里面有教程，指导你如何设置其他设备使用该旁路由（包括Android，iOS，Windows，MacOS，Linux）
 
 
 ### 刷新状态
 
-- 启动 V2Ray 后，页面状态不会自动变化，需要手动点击「刷新状态」按钮，然后再继续操作
+- 手动启动 V2Ray 后，页面状态不会自动变化，需要手动点击「刷新状态」按钮，然后再继续操作
 
 ### 修改脚本：
 
 - 如果需要修改脚本，可以在 assets/proxyDaemon.sh 中编写你自己的代理设置脚本
+
+
+
+
+## 📦 下载
+
+[点此下载最新版 APK](https://github.com/Sh-Fang/ProxyDaemon/releases/)  
+
+
+
 
 
 ## 🛠️ 自己构建APK
