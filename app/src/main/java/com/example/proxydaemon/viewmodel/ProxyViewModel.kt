@@ -3,7 +3,6 @@ package com.example.proxydaemon.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proxydaemon.util.IOUtils
-import com.example.proxydaemon.util.NetworkUtils
 import com.example.proxydaemon.util.RootShell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,16 +27,6 @@ class ProxyViewModel: ViewModel() {
     private val _logOutput = MutableStateFlow("")
     val logOutput: StateFlow<String> = _logOutput
 
-    private val _copyScriptToSystemStatus = MutableStateFlow(true) // 初始为 true
-    val copyScriptToSystemStatus: StateFlow<Boolean> = _copyScriptToSystemStatus
-
-    init {
-        viewModelScope.launch {
-            // 检测各种状态
-            checkStatus()
-        }
-    }
-
     fun appendLog(text: String) {
         val timestamp = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
         _logOutput.value += "[$timestamp] $text\n"
@@ -60,53 +49,52 @@ class ProxyViewModel: ViewModel() {
         }
     }
 
-    fun checkStatus() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                appendLog("检测设备 Root 状态...")
-                RootShell.rootExec("ls /data")
-                _rootStatus.value = true
-                appendLog("设备已 Root ✔\uFE0F")
+    fun checkStatus(): Boolean {
+        try {
+            appendLog("检测设备 Root 状态...")
+            RootShell.rootExec("ls /data")
+            _rootStatus.value = true
+            appendLog("设备已 Root ✔\uFE0F")
 
-                appendLog("检测 V2Ray 状态")
-                val v2rayResult = RootShell.rootExec("pgrep com.v2ray")
-                val isV2rayAppRunning = v2rayResult.trim().isNotEmpty()
-                _v2rayAppStatus.value = isV2rayAppRunning
-                _copyScriptToSystemStatus.value = isV2rayAppRunning
+            appendLog("检测 V2Ray 状态")
+            val v2rayResult = RootShell.rootExec("pgrep com.v2ray")
+            val isV2rayAppRunning = v2rayResult.trim().isNotEmpty()
+            _v2rayAppStatus.value = isV2rayAppRunning
 
-                if (isV2rayAppRunning) {
-                    appendLog("V2Ray 正在运行 ✔\uFE0F")
-                    appendLog("检测 V2Ray 代理状态")
-                    try {
-                        val proxyResult = RootShell.rootExec("ps | grep libtun2socks.so")
-                        val isV2rayProxyOn = proxyResult.contains("v2ray")
+            if (isV2rayAppRunning) {
+                appendLog("V2Ray 正在运行 ✔\uFE0F")
+                appendLog("检测 V2Ray 代理状态")
 
-                        _v2rayProxyStatus.value = isV2rayProxyOn
-                        _copyScriptToSystemStatus.value = isV2rayProxyOn
+                val proxyResult = RootShell.rootExec("ps | grep libtun2socks.so")
+                val isV2rayProxyOn = proxyResult.contains("v2ray")
 
-                        if (isV2rayProxyOn) {
-                            appendLog("V2Ray 代理已开启 ✔\uFE0F")
+                _v2rayProxyStatus.value = isV2rayProxyOn
 
-                            appendLog("检测脚本状态")
-                            val result = RootShell.rootExec("pgrep proxyDaemon.sh")
-                            if (result.isNotEmpty()) {
-                                _scriptStatus.value = true
-                                appendLog("脚本正在运行 ✔\uFE0F")
-                            }
+                if (isV2rayProxyOn) {
+                    appendLog("V2Ray 代理已开启 ✔\uFE0F")
 
-                        } else {
-                            appendLog("未检测到 V2Ray 代理，请选择一个节点开启代理 ❌")
-                        }
-                    } catch (e: Exception) {
-                        appendLog("检测代理状态失败 ❌")
+                    appendLog("检测脚本状态")
+                    val result = RootShell.rootExec("pgrep proxyDaemon.sh")
+                    if (result.isNotEmpty()) {
+                        _scriptStatus.value = true
+                        appendLog("脚本正在运行 ✔\uFE0F")
+                    }else{
+                        _scriptStatus.value = false
+                        appendLog("脚本尚未运行")
                     }
+
                 } else {
-                    appendLog("未检测到 V2ay 应用，请先启动 V2Ray ❌")
+                    appendLog("未检测到 V2Ray 代理，请选择一个节点开启代理 ❌")
                 }
-            } catch (e: Exception) {
-                appendLog("检测失败：设备没有 Root ❌")
+            } else {
+                appendLog("未检测到 V2ay 应用，请先启动 V2Ray ❌")
             }
+        } catch (e: Exception) {
+            appendLog("检测失败：设备没有 Root ❌")
+            return false
         }
+
+        return true
     }
 
     fun refreshStatus(){

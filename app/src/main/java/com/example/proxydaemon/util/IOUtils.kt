@@ -8,7 +8,7 @@ object IOUtils {
     var destinationPath = ""
     var systemDestinationPath = "/data/local/tmp"
 
-    fun copyScriptToSystem(context: Context) {
+    fun copyScriptToSystem(context: Context): Boolean {
         val fileName = "proxyDaemon.sh"
         val externalStoragePath = context.getExternalFilesDir(null)?.absolutePath
         destinationPath = "$externalStoragePath/$fileName"
@@ -28,6 +28,9 @@ object IOUtils {
 
         } catch (e: Exception) {
             e.printStackTrace()
+            return false
         }
+
+        return true
     }
 }

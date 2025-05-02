@@ -42,23 +42,47 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
     val v2rayProxyStatus by viewModel.v2rayProxyStatus.collectAsState()
     val scriptStatus by viewModel.scriptStatus.collectAsState()
     val logOutput by viewModel.logOutput.collectAsState()
-    val copyScriptToSystemStatus by viewModel.copyScriptToSystemStatus.collectAsState()
 
     var showDialog by remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabTitles = listOf("通用","Android", "iOS", "Windows", "Mac", "Linux")
 
-    LaunchedEffect(Unit) {
-        // 如果viewmodel的init部分检测正常完成
-        if (rootStatus && copyScriptToSystemStatus){
-            // 把脚本复制出来
-            viewModel.appendLog("拷贝内置脚本到系统")
-            IOUtils.copyScriptToSystem(context)
-            viewModel.appendLog("拷贝完成 ✔\uFE0F")
+    val networkStatus = remember { mutableStateOf(true) }
 
-            // 获取网络状态
-            NetworkUtils.initNetworkInfo()
+    LaunchedEffect(Unit) {
+        // 检查网络连接
+        viewModel.appendLog("检测网络状态")
+        if (!NetworkUtils.isWifiConnected(context)){
+            viewModel.appendLog("网络未连接 ❌")
+            networkStatus.value = false
+            return@LaunchedEffect
         }
+        viewModel.appendLog("网络正常 ✔\uFE0F")
+
+        // 检测各种状态
+        viewModel.appendLog("检测必要信息")
+        if (!viewModel.checkStatus()){
+            viewModel.appendLog("检测失败 ❌")
+            return@LaunchedEffect
+        }
+        viewModel.appendLog("必要信息正常 ✔\uFE0F")
+
+        // 把脚本复制出来
+        viewModel.appendLog("拷贝内置脚本到系统")
+        if (!IOUtils.copyScriptToSystem(context)){
+            viewModel.appendLog("拷贝失败 ❌")
+            return@LaunchedEffect
+        }
+        viewModel.appendLog("拷贝完成 ✔\uFE0F")
+
+        // 获取网络状态
+        viewModel.appendLog("获取连接信息")
+        if (!NetworkUtils.initNetworkInfo()){
+            viewModel.appendLog("获取失败 ❌")
+            return@LaunchedEffect
+        }
+        viewModel.appendLog("连接信息正常 ✔\uFE0F")
+
     }
 
     val backgroundColor = MaterialTheme.colorScheme.surface
@@ -394,6 +418,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                     // 刷新状态按钮
                     Button(
                         onClick = { viewModel.refreshStatus() },
+                        enabled = networkStatus.value,
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(vertical = 14.dp),
                         shape = RoundedCornerShape(12.dp),
@@ -618,9 +643,9 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                                 "把「IP设置」更改为「静态」",
                                                 "按照如下内容输入：",
                                                 "IP地址：刚才记下的IP地址",
-                                                "路由器：${NetworkUtils.networkInfo["ip"]}",
-                                                "前缀长度：${NetworkUtils.networkInfo["netmaskPrefix"]}",
-                                                "DNS：${NetworkUtils.networkInfo["dns"]}"
+                                                "路由器：${NetworkUtils.networkInfo["ip"] ?: "未知"}",
+                                                "前缀长度：${NetworkUtils.networkInfo["netmaskPrefix"] ?: "未知"}",
+                                                "DNS：${NetworkUtils.networkInfo["dns"] ?: "未知"}"
                                             )
 
                                             "iOS" -> listOf(
@@ -632,8 +657,8 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                                 "修改「配置IP」为「手动」",
                                                 "按照如下内容输入：",
                                                 "IP地址：刚才记下的IP地址",
-                                                "子网掩码：${NetworkUtils.networkInfo["netmask"]}",
-                                                "路由器：${NetworkUtils.networkInfo["ip"]}"
+                                                "子网掩码：${NetworkUtils.networkInfo["netmask"] ?: "未知"}",
+                                                "路由器：${NetworkUtils.networkInfo["ip"] ?: "未知"}"
                                             )
 
                                             "Windows" -> listOf(
@@ -646,9 +671,9 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                                 "选择「使用下面的IP地址」",
                                                 "按照如下内容输入：",
                                                 "IP地址：刚才记下的IP地址",
-                                                "子网掩码：${NetworkUtils.networkInfo["netmask"]}",
-                                                "默认网关：${NetworkUtils.networkInfo["ip"]}",
-                                                "DNS服务器：${NetworkUtils.networkInfo["dns"]}"
+                                                "子网掩码：${NetworkUtils.networkInfo["netmask"] ?: "未知"}",
+                                                "默认网关：${NetworkUtils.networkInfo["ip"] ?: "未知"}",
+                                                "DNS服务器：${NetworkUtils.networkInfo["dns"] ?: "未知"}"
                                             )
                                             "Mac" -> listOf(
                                                 "点击屏幕右上角的「Wi-Fi图标」",
@@ -659,9 +684,9 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                                 "将「配置IPv4」改为「手动」",
                                                 "按照如下内容输入：",
                                                 "IP地址：刚才记下的IP地址",
-                                                "子网掩码：${NetworkUtils.networkInfo["netmask"]}",
-                                                "路由器地址：${NetworkUtils.networkInfo["ip"]}",
-                                                "DNS服务器：${NetworkUtils.networkInfo["dns"]}"
+                                                "子网掩码：${NetworkUtils.networkInfo["netmask"] ?: "未知"}",
+                                                "路由器地址：${NetworkUtils.networkInfo["ip"] ?: "未知"}",
+                                                "DNS服务器：${NetworkUtils.networkInfo["dns"] ?: "未知"}"
                                             )
 
                                             "Linux" -> listOf(
@@ -673,9 +698,9 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                                 "将「方法」改为「手动」",
                                                 "按照如下内容输入：",
                                                 "地址：刚才记下的IP地址",
-                                                "子网掩码：${NetworkUtils.networkInfo["netmask"]}",
-                                                "网关：${NetworkUtils.networkInfo["ip"]}",
-                                                "DNS：${NetworkUtils.networkInfo["dns"]}"
+                                                "子网掩码：${NetworkUtils.networkInfo["netmask"] ?: "未知"}",
+                                                "网关：${NetworkUtils.networkInfo["ip"] ?: "未知"}",
+                                                "DNS：${NetworkUtils.networkInfo["dns"] ?: "未知"}"
                                             )
 
                                             else -> emptyList()
