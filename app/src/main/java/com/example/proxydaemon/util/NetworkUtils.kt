@@ -5,7 +5,7 @@ import java.util.Locale
 object NetworkUtils {
     val networkInfo = mutableMapOf<String, String>()
 
-    fun getNetworkInfo(){
+    fun initNetworkInfo(){
         // 获取当前 IP 地址
         val ipOutput = RootShell.rootExec("ip addr show wlan0")
         val ipRegex = Regex("inet (\\d+\\.\\d+\\.\\d+\\.\\d+)")

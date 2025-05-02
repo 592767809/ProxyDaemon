@@ -3,6 +3,7 @@ package com.example.proxydaemon.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proxydaemon.util.IOUtils
+import com.example.proxydaemon.util.NetworkUtils
 import com.example.proxydaemon.util.RootShell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,11 @@ class ProxyViewModel: ViewModel() {
 
     init {
         viewModelScope.launch {
+            // 检测各种状态
             checkStatus()
+
+            // 获取网络状态
+            NetworkUtils.initNetworkInfo()
         }
     }
 
@@ -110,6 +115,7 @@ class ProxyViewModel: ViewModel() {
     fun refreshStatus(){
         viewModelScope.launch(Dispatchers.IO) {
             checkStatus()
+            NetworkUtils.initNetworkInfo()
         }
     }
 
