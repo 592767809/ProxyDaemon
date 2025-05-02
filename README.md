@@ -7,6 +7,13 @@
 因为我手机每次重启后，都需要电脑 adb shell 到手机，然后再去执行脚本，我觉得太麻烦了。
 
 
+## 📕 软件截图
+
+<p align="center">
+  <img src="images/fig1.png" alt="图1" width="230" style="margin-right: 20px;"/>
+  <img src="images/fig2.png" alt="图2" width="230" style="margin-right: 20px;"/>
+  <img src="images/fig3.png" alt="图3" width="230"/>
+</p>
 
 ## ✨ 功能介绍
 
@@ -45,14 +52,6 @@
 
 - 如果需要修改脚本，可以在 assets/proxyDaemon.sh 中编写你自己的代理设置脚本
 
-
-## 📕 软件截图
-
-<p align="center">
-  <img src="images/fig1.png" alt="图1" width="230" style="margin-right: 20px;"/>
-  <img src="images/fig2.png" alt="图2" width="230" style="margin-right: 20px;"/>
-  <img src="images/fig3.png" alt="图3" width="230"/>
-</p>
 
 ## 🛠️ 自己构建APK
 
