@@ -26,7 +26,6 @@ object NetworkUtils {
             val ipMatch = ipRegex.find(ipOutput)
             ipMatch?.let {
                 networkInfo["ip"] = it.groupValues[1]
-                networkInfo["dns"] = it.groupValues[1]
             }
 
             // 获取当前SSID
@@ -42,6 +41,12 @@ object NetworkUtils {
                 val netmask = cidrToNetmask(cidr)
                 networkInfo["netmask"] = netmask
             }
+
+            // 获取路由器IP
+            networkInfo["routerIP"] = getRouterIp(networkInfo["ip"].toString(),networkInfo["netmask"].toString()).toString()
+
+            // 获取DNS
+            networkInfo["dns"] = networkInfo["routerIP"].toString()
 
             // 网络前缀长度
             val netmaskPrefix = RootShell.rootExec("ip addr show wlan0 | grep inet | awk '{print $2}'").split("\n")[0].split("/")[1]
@@ -63,5 +68,27 @@ object NetworkUtils {
             (mask shr 16) and 0xff,
             (mask shr 8) and 0xff,
             mask and 0xff)
+    }
+
+    // 获取路由器IP
+    fun getRouterIp(ip: String, netmask: String): String? {
+        val ipParts = ip.split(".")
+        val maskParts = netmask.split(".")
+
+        if (ipParts.size != 4 || maskParts.size != 4) return null
+
+        val gatewayParts = mutableListOf<String>()
+
+        for (i in 0..3) {
+            // 如果子网掩码是255，说明该部分保留，直接用原 IP 的那部分
+            // 否则（为0），说明这一段是主机位，设置为1（通常是网关）
+            gatewayParts.add(
+                if (maskParts[i] == "255") ipParts[i]
+                else if (maskParts[i] == "0") "1"
+                else "1" // 对于非255非0的情况，用 1 近似处理
+            )
+        }
+
+        return gatewayParts.joinToString(".")
     }
 }
