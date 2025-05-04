@@ -658,7 +658,11 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                                 "按照如下内容输入：",
                                                 "IP地址：刚才记下的IP地址",
                                                 "子网掩码：${NetworkUtils.networkInfo["netmask"] ?: "未知"}",
-                                                "路由器：${NetworkUtils.networkInfo["ip"] ?: "未知"}"
+                                                "路由器：${NetworkUtils.networkInfo["ip"] ?: "未知"}",
+                                                "退出当前页面",
+                                                "进入DNS配置页面",
+                                                "修改为「手动」",
+                                                "DNS：${NetworkUtils.networkInfo["dns"] ?: "未知"}"
                                             )
 
                                             "Windows" -> listOf(
