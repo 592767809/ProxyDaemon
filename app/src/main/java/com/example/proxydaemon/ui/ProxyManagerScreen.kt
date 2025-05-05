@@ -632,30 +632,11 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                             InfoCard("DNS", NetworkUtils.networkInfo["dns"] ?: "未知")
                                         }
                                     }
-                                    "关于" -> {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .fillMaxHeight(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                verticalArrangement = Arrangement.Center
-                                            ) {
-                                                Button(
-                                                    onClick = { UpdateUtils.checkUpdate(context) },
-                                                    shape = RoundedCornerShape(8.dp),
-                                                    colors = ButtonDefaults.buttonColors(
-                                                        containerColor = MaterialTheme.colorScheme.primary
-                                                    )
-                                                ) {
-                                                    Text("检查更新", fontWeight = FontWeight.Medium)
-                                                }
-                                            }
-                                        }
 
+                                    "关于" -> {
+                                        UpdateButton()
                                     }
+
                                     "Android", "iOS", "Windows", "Mac", "Linux" -> {
                                         // 其他平台保持文本形式但增加样式
                                         val instructions = when (tabTitles[selectedTabIndex]) {
@@ -807,3 +788,43 @@ fun InfoCard(title: String, value: String) {
         }
     }
 }
+
+@Composable
+fun UpdateButton() {
+    var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    Button(
+        onClick = {
+            isLoading = true
+            UpdateUtils.checkUpdate(
+                context,
+                onDone = { isLoading = false }
+            )
+        },
+        enabled = !isLoading,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.secondary,
+            disabledContentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Box {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text("检查更新", fontWeight = FontWeight.Medium)
+            }
+        }
+    }
+
+}
+

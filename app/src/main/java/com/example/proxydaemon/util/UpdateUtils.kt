@@ -3,8 +3,6 @@ package com.example.proxydaemon.util
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -12,13 +10,17 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import androidx.core.net.toUri
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object UpdateUtils {
 
     private const val API_URL = "https://api.github.com/repos/Sh-Fang/ProxyDaemon/releases/latest"
 
-    fun checkUpdate(context: Context) {
-        Thread {
+    fun checkUpdate(context: Context, onDone: () -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 val url = URL(API_URL)
                 val conn = url.openConnection() as HttpURLConnection
@@ -38,7 +40,7 @@ object UpdateUtils {
 
                     val json = JSONObject(result.toString())
 
-                    val tagName = json.getString("tag_name") // e.g. "v1.2.0"
+                    val tagName = json.getString("tag_name")
                     val releaseNote = json.getString("body")
 
                     val assets: JSONArray = json.getJSONArray("assets")
@@ -55,23 +57,22 @@ object UpdateUtils {
                     val currentVersion = context.packageManager
                         .getPackageInfo(context.packageName, 0).versionName
 
-                    if (isNewerVersion(latestVersion, currentVersion.toString())) {
-                        val finalDownloadUrl = downloadUrl
-                        Handler(Looper.getMainLooper()).post {
+                    withContext(Dispatchers.Main) {
+                        onDone()
+
+                        if (isNewerVersion(latestVersion, currentVersion.toString())) {
                             AlertDialog.Builder(context)
                                 .setTitle("发现新版本：$latestVersion")
                                 .setMessage(releaseNote)
                                 .setPositiveButton("去更新") { _, _ ->
-                                    finalDownloadUrl?.let {
+                                    downloadUrl?.let {
                                         val intent = Intent(Intent.ACTION_VIEW, it.toUri())
                                         context.startActivity(intent)
                                     }
                                 }
                                 .setNegativeButton("取消", null)
                                 .show()
-                        }
-                    }else{
-                        Handler(Looper.getMainLooper()).post {
+                        } else {
                             AlertDialog.Builder(context)
                                 .setTitle("已是最新版本")
                                 .setNegativeButton("确认", null)
@@ -81,9 +82,18 @@ object UpdateUtils {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    onDone()
+                    AlertDialog.Builder(context)
+                        .setTitle("检查更新失败")
+                        .setMessage("请检查网络连接或稍后重试")
+                        .setNegativeButton("确认", null)
+                        .show()
+                }
             }
-        }.start()
+        }
     }
+
 
     // 简单的版本比较器（基于 "1.2.0" 这样的格式）
     private fun isNewerVersion(latest: String, current: String): Boolean {
