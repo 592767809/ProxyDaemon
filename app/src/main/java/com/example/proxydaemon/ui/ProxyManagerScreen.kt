@@ -31,6 +31,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.proxydaemon.util.IOUtils
 import com.example.proxydaemon.util.NetworkUtils
+import com.example.proxydaemon.util.UpdateUtils
 import com.example.proxydaemon.viewmodel.ProxyViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +46,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
 
     var showDialog by remember { mutableStateOf(false) }
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabTitles = listOf("通用","Android", "iOS", "Windows", "Mac", "Linux")
+    val tabTitles = listOf("通用","Android", "iOS", "Windows", "Mac", "Linux","关于")
 
     val networkStatus = remember { mutableStateOf(true) }
 
@@ -166,7 +167,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                         .padding(vertical = 6.dp),
                     shape = cardShape,
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = cardElevation)
                 ) {
@@ -241,7 +242,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                         .padding(vertical = 6.dp),
                     shape = cardShape,
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = cardElevation)
                 ) {
@@ -340,7 +341,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                         .padding(vertical = 6.dp),
                     shape = cardShape,
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = cardElevation)
                 ) {
@@ -505,7 +506,7 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                             .fillMaxWidth()
                             .weight(1f),
                         shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
                         tonalElevation = 2.dp,
                         shadowElevation = 2.dp
                     ) {
@@ -630,6 +631,30 @@ fun ProxyManagerScreen(viewModel: ProxyViewModel = viewModel()) {
                                             InfoCard("前缀长度", NetworkUtils.networkInfo["netmaskPrefix"] ?: "未知")
                                             InfoCard("DNS", NetworkUtils.networkInfo["dns"] ?: "未知")
                                         }
+                                    }
+                                    "关于" -> {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .fillMaxHeight(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.Center
+                                            ) {
+                                                Button(
+                                                    onClick = { UpdateUtils.checkUpdate(context) },
+                                                    shape = RoundedCornerShape(8.dp),
+                                                    colors = ButtonDefaults.buttonColors(
+                                                        containerColor = MaterialTheme.colorScheme.primary
+                                                    )
+                                                ) {
+                                                    Text("检查更新", fontWeight = FontWeight.Medium)
+                                                }
+                                            }
+                                        }
+
                                     }
                                     "Android", "iOS", "Windows", "Mac", "Linux" -> {
                                         // 其他平台保持文本形式但增加样式
@@ -758,7 +783,7 @@ fun InfoCard(title: String, value: String) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
