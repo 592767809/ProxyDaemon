@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
-import com.example.proxydaemon.ui.ProxyManagerScreen
+import com.example.proxydaemon.ui.screen.ProxyMainScreen
 import com.example.proxydaemon.util.RootShell
 
 
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ProxyManagerScreen()
+            ProxyMainScreen()
         }
     }
 
@@ -31,5 +31,5 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun ProxyManagerScreenPreview() {
-    ProxyManagerScreen()
+    ProxyMainScreen()
 }

@@ -3,6 +3,7 @@ package com.example.proxydaemon.util
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -19,7 +20,16 @@ object UpdateUtils {
 
     private const val API_URL = "https://api.github.com/repos/Sh-Fang/ProxyDaemon/releases/latest"
 
-    fun checkUpdate(context: Context, onDone: () -> Unit) {
+    data class UpdateInfo(
+        val latestVersion: String,
+        val releaseNote: String,
+        val downloadUrl: String?
+    )
+
+    fun checkUpdate(
+        context: Context,
+        onResult: (UpdateInfo?) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val url = URL(API_URL)
@@ -40,6 +50,9 @@ object UpdateUtils {
 
                     val json = JSONObject(result.toString())
 
+                    // TODO: remove it
+                    Log.d("json",json.toString())
+
                     val tagName = json.getString("tag_name")
                     val releaseNote = json.getString("body")
 
@@ -57,38 +70,24 @@ object UpdateUtils {
                     val currentVersion = context.packageManager
                         .getPackageInfo(context.packageName, 0).versionName
 
-                    withContext(Dispatchers.Main) {
-                        onDone()
+                    val isNewer = isNewerVersion(latestVersion, currentVersion.toString())
 
-                        if (isNewerVersion(latestVersion, currentVersion.toString())) {
-                            AlertDialog.Builder(context)
-                                .setTitle("发现新版本：$latestVersion")
-                                .setMessage(releaseNote)
-                                .setPositiveButton("去更新") { _, _ ->
-                                    downloadUrl?.let {
-                                        val intent = Intent(Intent.ACTION_VIEW, it.toUri())
-                                        context.startActivity(intent)
-                                    }
-                                }
-                                .setNegativeButton("取消", null)
-                                .show()
+                    withContext(Dispatchers.Main) {
+                        if (isNewer) {
+                            onResult(UpdateInfo(latestVersion, releaseNote, downloadUrl))
                         } else {
-                            AlertDialog.Builder(context)
-                                .setTitle("已是最新版本")
-                                .setNegativeButton("确认", null)
-                                .show()
+                            onResult(null)
                         }
+                    }
+                }else{
+                    withContext(Dispatchers.Main) {
+                        onResult(null)
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    onDone()
-                    AlertDialog.Builder(context)
-                        .setTitle("检查更新失败")
-                        .setMessage("请检查网络连接或稍后重试")
-                        .setNegativeButton("确认", null)
-                        .show()
+                    onResult(null)
                 }
             }
         }

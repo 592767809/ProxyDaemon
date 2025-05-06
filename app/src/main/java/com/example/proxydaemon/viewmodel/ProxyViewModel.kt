@@ -1,8 +1,11 @@
 package com.example.proxydaemon.viewmodel
 
+import android.content.Context
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.proxydaemon.util.IOUtils
+import com.example.proxydaemon.util.NetworkUtils
 import com.example.proxydaemon.util.RootShell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -101,6 +104,37 @@ class ProxyViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             checkStatus()
         }
+    }
+
+    fun performStartupChecks(context: Context, networkStatus: MutableState<Boolean>) {
+        appendLog("检测网络状态")
+        if (!NetworkUtils.isWifiConnected(context)) {
+            appendLog("网络未连接 ❌")
+            networkStatus.value = false
+            return
+        }
+        appendLog("网络正常 ✔️")
+
+        appendLog("检测必要信息")
+        if (!checkStatus()) {
+            appendLog("检测失败 ❌")
+            return
+        }
+        appendLog("必要信息正常 ✔️")
+
+        appendLog("拷贝内置脚本到系统")
+        if (!IOUtils.copyScriptToSystem(context)) {
+            appendLog("拷贝失败 ❌")
+            return
+        }
+        appendLog("拷贝完成 ✔️")
+
+        appendLog("获取连接信息")
+        if (!NetworkUtils.initNetworkInfo()) {
+            appendLog("获取失败 ❌")
+            return
+        }
+        appendLog("连接信息正常 ✔️")
     }
 
 }
