@@ -50,9 +50,6 @@ object UpdateUtils {
 
                     val json = JSONObject(result.toString())
 
-                    // TODO: remove it
-                    Log.d("json",json.toString())
-
                     val tagName = json.getString("tag_name")
                     val releaseNote = json.getString("body")
 
