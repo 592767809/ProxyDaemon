@@ -10,22 +10,14 @@
 ## 📕 软件截图
 
 <p align="center">
-  <img src="images/fig1.png" alt="图1" width="230" style="margin-right: 20px;"/>
-  <img src="images/fig2.png" alt="图2" width="230" style="margin-right: 20px;"/>
+  <img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/20250507121046727.png" alt="图1" width="230"/>
+  <img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/20250507123847629.png" alt="图2" width="230" />
 </p>
-
-## ✨ 功能介绍
-
-- ✅ 自动检测 V2Ray 应用以及 V2Ray 代理是否已启动
-- ✅ 自动复制脚本到系统目录
-- ✅ 一键执行 proxy.sh 脚本（需要 Root 权限）
-- ✅ 实时日志输出
-
 
 
 ## 📋 使用说明
 
-> 再次提醒：这个 APP 是安装到闲置的并且已经 Root 过的安卓设备上的，按照下面的使用方法启动脚本后，这台安卓设备就变成了一个旁路由设备。
+> 安卓设备必须已经Root，按照下面的使用方法启动脚本后，这台安卓设备就变成了一个旁路由设备。
 
 
 ### 前提条件：
@@ -42,7 +34,7 @@
 
 - 点击「立即执行脚本」按钮，后台运行脚本
 
-- 界面右上角有一个ℹ️图标，点击这个图标可以进入帮助页面，里面有教程，指导你如何设置其他设备使用该旁路由（包括Android，iOS，Windows，MacOS，Linux）
+- 界面右上角有一个ℹ️图标，点击这个图标可以进入帮助页面，里面有教程，指导如何设置其他设备连接到该旁路由（包括Android，iOS，Windows，MacOS，Linux）
 
 
 ### 刷新状态
