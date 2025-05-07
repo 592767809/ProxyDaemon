@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -212,7 +213,26 @@ private fun GeneralContent() {
 
 @Composable
 private fun AboutContent() {
-    UpdateButton()
+    val context = LocalContext.current
+    val currentVersion = context.packageManager
+        .getPackageInfo(context.packageName, 0).versionName
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp), // 添加整体内边距
+        horizontalAlignment = Alignment.CenterHorizontally, // 水平居中
+        verticalArrangement = Arrangement.spacedBy(12.dp) // 元素之间间距
+    ) {
+        UpdateButton()
+
+        Text(
+            text = "当前版本: v$currentVersion",
+            style = MaterialTheme.typography.bodySmall // 使用更协调的样式
+        )
+    }
+
+
 }
 
 @Composable
