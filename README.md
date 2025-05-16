@@ -15,35 +15,64 @@
 </p>
 
 
-## 📋 使用说明
+## 📋 如何使用
 
-> 安卓设备必须已经Root，按照下面的使用方法启动脚本后，这台安卓设备就变成了一个旁路由设备。
+> 设备必须已经Root，并且已经安装了例如v2rayNG这样的代理App
 
+### ProxyDaemon操作演示
 
-### 前提条件：
+App启动时会检测设备是否连接网络，如果网络没有连接，将无法往下进行。
 
-- 手机已获取 Root 权限
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161142875.png" alt="image-20250516114232834" style="zoom: 67%;" />
 
-- 手机安装了 V2ray 应用，并有可以用的节点
+网络检测完成后会检测设备Root情况，如果设备没有Root，将无法往下进行。
 
-### 第一次使用：
+设备Root后，会接着检测代理App（v2rayNG等）是否启动，以及代理状态（科学上网）是否连接。
 
-- APP打开后，会自动检测相关状态，如果状态全部 OK 才能执行脚本
-  
-- APP会把内置的脚本 proxyDaemon.sh 拷贝到 /data/local/tmp/ 并自动赋予执行权限（chmod +x）
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161144859.png" alt="image-20250516114459794" style="zoom: 50%;" />
 
-- 点击「立即执行脚本」按钮，后台运行脚本
+把ProxyDaemon切到后台，启动v2rayNG，返回ProxyDaemon点击“刷新状态”，可以看到提示“应用已启动”
 
-- 界面右上角有一个ℹ️图标，点击这个图标可以进入帮助页面，里面有教程，指导如何设置其他设备连接到该旁路由（包括Android，iOS，Windows，MacOS，Linux）
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161148553.png" alt="image-20250516114823501" style="zoom: 50%;" />
 
+把ProxyDaemon切到后台，选择一个v2rayNG的节点并连接，返回ProxyDaemon点击“刷新状态”，可以看到提示“代理已连接”
 
-### 刷新状态
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161149672.png" alt="image-20250516114958624" style="zoom: 50%;" />
 
-- 手动启动 V2Ray 后，页面状态不会自动变化，需要手动点击「刷新状态」按钮，然后再继续操作
+此时“立即执行脚本”按钮可以点击，点击按钮，ProxyDaemon会运行内置的脚本（如果设备目前已经有运行的脚本，点击按钮会先终止之前的脚本，再重新运行脚本）
 
-### 修改脚本：
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161151634.png" alt="image-20250516115152586" style="zoom: 50%;" />
 
-- 如果需要修改脚本，可以在 assets/proxyDaemon.sh 中编写你自己的代理设置脚本
+### 如何让其他设备使用这台旁路由
+
+点击界面右上角的ℹ️图标，打开“使用帮助”
+
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161153445.png" alt="image-20250516115318396" style="zoom: 50%;" />
+
+如果你之前配置过旁路由，那么“通用”里面的帮助信息就足够用了
+
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161154495.png" alt="image-20250516115430454" style="zoom:50%;" />
+
+如果是第一次使用，在侧边栏选择你需要科学上网的设备（例如我的是Windows），就可以按照里面的教程来配置
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161156960.png" alt="image-20250516115636916" alt="图1" width="240"/>
+  <img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161156641.png" alt="image-20250516115648598" alt="图2" width="240" />
+</p>
+
+配置完成后检查效果，电脑没有连接任何代理工具，浏览器可以直接访问谷歌
+
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161203065.png" alt="image-20250516120325976" style="zoom:50%;" />
+
+对于那些不太好设置代理的软件，例如CMD，设置旁路由以后也可以直接访问谷歌
+
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161207021.png" alt="image-20250516120720964" style="zoom:50%;" />
+
+### 软件更新
+
+点击“关于”，里面当前App版本，以及检查更新的按钮
+
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161209425.png" alt="image-20250516120919381" style="zoom:50%;" />
 
 
 
@@ -54,9 +83,9 @@
 
 
 
-
-
 ## 🛠️ 自己构建APK
+
+> 如果你需要自定义脚本，可以在 app/src/main/assets/proxyDaemon.sh 中修改代理脚本
 
 克隆项目
 
