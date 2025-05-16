@@ -23,35 +23,35 @@
 
 App启动时会检测设备是否连接网络，如果网络没有连接，将无法往下进行。
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161142875.png" alt="image-20250516114232834" style="zoom: 67%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161142875.png" alt="image-20250516114232834" style="display: block; margin: 0 auto;zoom: 40%;" />
 
 网络检测完成后会检测设备Root情况，如果设备没有Root，将无法往下进行。
 
 设备Root后，会接着检测代理App（v2rayNG等）是否启动，以及代理状态（科学上网）是否连接。
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161144859.png" alt="image-20250516114459794" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161144859.png" alt="image-20250516114459794" style="display: block; margin: 0 auto; zoom: 30%;" />
 
 把ProxyDaemon切到后台，启动v2rayNG，返回ProxyDaemon点击“刷新状态”，可以看到提示“应用已启动”
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161148553.png" alt="image-20250516114823501" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161148553.png" alt="image-20250516114823501" style="display: block; margin: 0 auto;zoom: 30%;" />
 
 把ProxyDaemon切到后台，选择一个v2rayNG的节点并连接，返回ProxyDaemon点击“刷新状态”，可以看到提示“代理已连接”
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161149672.png" alt="image-20250516114958624" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161149672.png" alt="image-20250516114958624" style="display: block; margin: 0 auto;zoom: 30%;" />
 
 此时“立即执行脚本”按钮可以点击，点击按钮，ProxyDaemon会运行内置的脚本（如果设备目前已经有运行的脚本，点击按钮会先终止之前的脚本，再重新运行脚本）
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161151634.png" alt="image-20250516115152586" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161151634.png" alt="image-20250516115152586" style="display: block; margin: 0 auto;zoom: 30%;" />
 
 ### 如何让其他设备使用这台旁路由
 
 点击界面右上角的ℹ️图标，打开“使用帮助”
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161153445.png" alt="image-20250516115318396" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161153445.png" alt="image-20250516115318396" style="display: block; margin: 0 auto;zoom: 30%;" />
 
 如果你之前配置过旁路由，那么“通用”里面的帮助信息就足够用了
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161154495.png" alt="image-20250516115430454" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161154495.png" alt="image-20250516115430454" style="display: block; margin: 0 auto;zoom:30%;" />
 
 如果是第一次使用，在侧边栏选择你需要科学上网的设备（例如我的是Windows），就可以按照里面的教程来配置
 
@@ -62,17 +62,17 @@ App启动时会检测设备是否连接网络，如果网络没有连接，将�
 
 配置完成后检查效果，电脑没有连接任何代理工具，浏览器可以直接访问谷歌
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161203065.png" alt="image-20250516120325976" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161203065.png" alt="image-20250516120325976" style="display: block; margin: 0 auto;zoom:30%;" />
 
 对于那些不太好设置代理的软件，例如CMD，设置旁路由以后也可以直接访问谷歌
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161207021.png" alt="image-20250516120720964" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161207021.png" alt="image-20250516120720964" style="display: block; margin: 0 auto;zoom:30%;" />
 
 ### 软件更新
 
 点击“关于”，里面当前App版本，以及检查更新的按钮
 
-<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161209425.png" alt="image-20250516120919381" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/Sh-Fang/my-images/main/picgo/202505161209425.png" alt="image-20250516120919381" style="display: block; margin: 0 auto;zoom:30%;" />
 
 
 
