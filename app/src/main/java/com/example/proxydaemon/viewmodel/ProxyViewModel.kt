@@ -39,15 +39,20 @@ class ProxyViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = RootShell.rootExec("pgrep proxyDaemon.sh")
-                if (result.isNotEmpty()) {
-                    appendLog("脚本正在运行，无需重复启动")
-                } else {
-                    RootShell.rootExec("nohup ${IOUtils.systemDestinationPath} &")
-                    appendLog("脚本运行成功 ✔\uFE0F")
-                    _scriptStatus.value = true
+                if (result.isNotBlank()) {
+                    appendLog("检测到脚本正在运行，尝试终止并重新运行")
+                    val pids = result.lines().mapNotNull { it.trim().toIntOrNull() }
+                    pids.forEach { pid ->
+                        RootShell.rootExec("kill -9 $pid")
+                    }
                 }
+
+                RootShell.rootExec("nohup ${IOUtils.systemDestinationPath} &")
+                appendLog("脚本运行成功 ✔\uFE0F")
+                _scriptStatus.value = true
+
             } catch (e: Exception) {
-                appendLog("脚本启动失败")
+                appendLog("脚本启动失败：${e.message}")
             }
         }
     }
@@ -58,43 +63,49 @@ class ProxyViewModel: ViewModel() {
             RootShell.rootExec("ls /data")
             _rootStatus.value = true
             appendLog("设备已 Root ✔\uFE0F")
-
-            appendLog("检测 V2Ray 状态")
-            val v2rayResult = RootShell.rootExec("pgrep com.v2ray")
-            val isV2rayAppRunning = v2rayResult.trim().isNotEmpty()
-            _v2rayAppStatus.value = isV2rayAppRunning
-
-            if (isV2rayAppRunning) {
-                appendLog("V2Ray 正在运行 ✔\uFE0F")
-                appendLog("检测 V2Ray 代理状态")
-
-                val proxyResult = RootShell.rootExec("ps | grep libtun2socks.so")
-                val isV2rayProxyOn = proxyResult.contains("v2ray")
-
-                _v2rayProxyStatus.value = isV2rayProxyOn
-
-                if (isV2rayProxyOn) {
-                    appendLog("V2Ray 代理已开启 ✔\uFE0F")
-
-                    appendLog("检测脚本状态")
-                    val result = RootShell.rootExec("pgrep proxyDaemon.sh")
-                    if (result.isNotEmpty()) {
-                        _scriptStatus.value = true
-                        appendLog("脚本正在运行 ✔\uFE0F")
-                    }else{
-                        _scriptStatus.value = false
-                        appendLog("脚本尚未运行")
-                    }
-
-                } else {
-                    appendLog("未检测到 V2Ray 代理，请选择一个节点开启代理 ❌")
-                }
-            } else {
-                appendLog("未检测到 V2ay 应用，请先启动 V2Ray ❌")
-            }
         } catch (e: Exception) {
             appendLog("检测失败：设备没有 Root ❌")
             return false
+        }
+
+        try {
+            appendLog("检测代理App状态...")
+            val v2rayResult = RootShell.rootExec("ps | grep -E 'v2ray|xray|clash|tun2socks' | grep -v grep")
+            val isProxyAppRunning = v2rayResult.trim().isNotEmpty()
+            _v2rayAppStatus.value = isProxyAppRunning
+
+            if (!isProxyAppRunning) {
+                appendLog("代理App未启动 ❌")
+                return false
+            }
+
+            appendLog("代理App正在运行 ✔\uFE0F")
+            appendLog("检测代理状态...")
+
+            val proxyResult = RootShell.rootExec("ip addr")
+            val isProxyOn = Regex("tun\\d+|clash\\d*").containsMatchIn(proxyResult)
+
+            _v2rayProxyStatus.value = isProxyOn
+
+            if (!isProxyOn) {
+                appendLog("未检测到代理，请选择一个节点开启代理 ❌")
+                return false
+            }
+
+            appendLog("代理已连接 ✔\uFE0F")
+
+            appendLog("检测脚本状态...")
+            val result = RootShell.rootExec("pgrep proxyDaemon.sh")
+            if (result.isNotBlank()) {
+                _scriptStatus.value = true
+                appendLog("脚本正在运行 ✔\uFE0F")
+            }else{
+                _scriptStatus.value = false
+                appendLog("脚本尚未运行")
+            }
+
+        }catch (e: Exception){
+            appendLog("检测失败：${e.message}")
         }
 
         return true
