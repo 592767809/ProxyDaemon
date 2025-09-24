@@ -48,8 +48,12 @@ class ProxyViewModel: ViewModel() {
                 }
 
                 RootShell.rootExec("nohup ${IOUtils.systemDestinationPath} &")
-                appendLog("脚本运行成功 ✔\uFE0F")
-                _scriptStatus.value = true
+                if(RootShell.rootExec("pgrep proxyDaemon.sh").isNotBlank()){
+                    appendLog("脚本运行成功 ✔\uFE0F")
+                    _scriptStatus.value = true
+                }else{
+                    appendLog("脚本运行失败 ❌")
+                }
 
             } catch (e: Exception) {
                 appendLog("脚本启动失败：${e.message}")
